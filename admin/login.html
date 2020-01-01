@@ -79,7 +79,8 @@
         $('#myModal').modal();
         $('#myModal').on('hidden.bs.modal', function (e) {
           if (msg.code == 200) {
-            // alert()
+            // alert();
+              sessionStorage.setItem('token',msg.token);
             window.location.href = './index.html'
           }
         })
