@@ -1,4 +1,4 @@
-(function () {
+(function (w) {
 	var baseurl = 'http://localhost:8080/api/v1';
 	var baseobj = {
 		baseurl:baseurl,
@@ -35,4 +35,5 @@
 		post_comment:baseurl+'/index/post_comment',//发表评论
 		search:baseurl+'/index/search',//文章搜索
 	};
+	w.baseobj = baseobj;
 })(window);

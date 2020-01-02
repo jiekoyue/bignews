@@ -76,7 +76,7 @@
 			if (username != '' && password != '') {
 				$.ajax({
 					type: 'post',
-					url: 'http://localhost:8080/api/v1/admin/user/login',
+					url: baseobj.login,
 					data: {
 						username: username,
 						password: password
