@@ -9,6 +9,7 @@
     <link href="css/reset.css" rel="stylesheet">
     <link href="css/font-awesome.min.css" rel="stylesheet">
     <link href="css/main.css" rel="stylesheet">
+    <script src="admin/libs/http.js"></script>
 </head>
 
 <body>
@@ -231,7 +232,7 @@
     {{ each data v }}
     <div class="common_news_list">
         <a class="list_pic" href="#"><img alt="" src="{{v.cover}}"></a>
-        <h4><a href="#">{{v.title}}</a></h4>
+        <h4><a href="javascript:void(0)" data-id="{{v.id}}" class="data-id">{{v.title}}</a></h4>
         <p>
             {{v.intro}}
         </p>
@@ -262,6 +263,12 @@
 				$('.common_news').html(template('zixuan',msg))
 			}
 		});
+		$('.common_news').on('click','.data-id',function f() {
+			var id = $(this).attr('data-id');
+			sessionStorage.setItem('wzid',id);
+			window.location.href = './article.html'
+		});
+
 	})
 </script>
 </html>
