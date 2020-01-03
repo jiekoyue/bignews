@@ -14,6 +14,8 @@
     <!-- 引入模板引擎js文件 -->
     <script src="./libs/template-web.js"></script>
     <script src="libs/http.js"></script>
+    <script src="js/page.js"></script>
+    <link rel="stylesheet" href="css/page.css">
 </head>
 
 <body>
@@ -37,7 +39,7 @@
                             <option value="草稿">草稿</option>
                             <option value="已发布">已发布</option>
                         </select>
-                        <button id="btnSearch" class="btn btn-default btn-sm">筛选</button>
+                        <button id="btnSearch" class="btn btn-default btn-sm" page="1">筛选</button>
                     </form>
                 </div>
                 <div class="col-xs-6">
@@ -69,18 +71,8 @@
                     </tr>
                 </tbody>
             </table>
-            <div class="row text-center">
-                <nav aria-label="..." style="margin: 0 auto">
-                    <ul class="pagination">
-                        <li class="disabled"><span aria-hidden="true">«</span></li>
-                        <li class="active"><a href="#">1 <span class="sr-only">(current)</span></a></li>
-                        <li><a href="#">2</a></li>
-                        <li><a href="#">3</a></li>
-                        <li><a href="#">4</a></li>
-                        <li><a href="#">5</a></li>
-                        <li><span aria-hidden="true">»</span></li>
-                    </ul>
-                </nav>
+            <div class="row text-center" style="text-align: center;">
+                <div class="pageTest" style="display: inline-block"></div>
             </div>
         </div>
 
@@ -103,26 +95,24 @@
         <td class="text-center">{{v.date}}</td>
         <td class="text-center">{{v.state}}</td>
         <td class="text-center">
-            <a href="article_edit.html" class="btn btn-default btn-xs">编辑</a>
-            <a href="javascript:void(0);" class="btn btn-danger btn-xs delete">删除</a>
+            <a href="article_edit.html?id={{v.id}}" class="btn btn-default btn-xs">编辑</a>
+            <a href="javascript:void(0);" data-id="{{v.id}}" class="btn btn-danger btn-xs delete">删除</a>
         </td>
     </tr>
     {{/each}}
 </script>
 
-<!--   页码渲染 -->
-<script id="ymlist" type="text/html">
-    <li class="disabled"><span aria-hidden="true" style="cursor: pointer;" >«</span></li>
-    {{ each cat}}
-    {{if $index==num}}
-    <li class="active"><a href="#" class="alist">{{$index+1}}<span class="sr-only">(current)</span></a></li>
-    {{else}}
-    <li><a href="#" class="alist">{{$index+1}}</a></li>
-    {{/if}}
-    {{ /each }}
-    <li><span aria-hidden="true" style="cursor: pointer;">»</span></li>
-</script>
 </body>
+<script type="text/javascript">
+	$('.pageTest').page({
+		leng: 10,//分页总数
+		activeClass: 'activP' , //active 类样式定义
+		clickBack:function(page){
+			console.log(page)
+		}
+	});
+</script>
+
 <script>
     $(function () {
     	//下拉类别渲染
@@ -134,8 +124,18 @@
 				$('#selCategory').html(template('optionlist',msg));
 			}
         });
-        //文章渲染
-        function wenzhan(type,state,page,fn){
+		var key = true,page;
+        //筛选按钮事件
+        $('#btnSearch').click(function (e) {
+			e.preventDefault();
+			var type = $("#selCategory>option:checked").attr('optionid');
+			var state = $("#selStatus").val();
+			if (!key){
+				page = $(this).attr('page');
+            } else{
+				page = 1;
+            }
+
 			$.ajax({
 				type:'get',
 				url:baseobj.query,
@@ -146,44 +146,41 @@
 					perpage:10
 				},
 				success:function (msg) {
-					// console.log(msg);
-					fn(msg.data.totalPage);
+					console.log(msg.data.totalPage);
 					$('.mp20>tbody').html(template('trlist',msg));
+					if (key){
+						$('.pageTest').setLength(msg.data.totalPage);
+                    } else{
+						key = true;
+                    }
 				}
 			});
-        }
-        //调用文章渲染方法并渲染页码
-        wenzhan("","",1,function (len) {
-			var cat = [];
-			cat.length = len;
-			//页码渲染
-			$('.pagination').html(template('ymlist',{cat:cat,num:0}));
 		});
-        //筛选按钮
-        function shiaxun(num){
-			var type = $("#selCategory>option:checked").attr('optionid');
-			var state = $("#selStatus").val();
-			console.log(type,state);
-			wenzhan(type,state,num+1,function (len) {
-				var cat = [];
-				cat.length = len;
-				//页码渲染
-				$('.pagination').html(template('ymlist',{cat:cat,num:num}));
-			})
-        }
-        $('#btnSearch').click(function (e) {
-			e.preventDefault();
-            // alert();
-			shiaxun(0);
-
-		});
-
-        //点击页码
-        $('.pagination').on('click','.alist',function () {
-            // alert()
-			shiaxun($(this).text()-1)
+        //主动触发按钮事件
+		btnSearch.click();
+		//页码事件
+		$('.pageTest').page({
+			clickBack: function(page) {
+				$('#btnSearch').attr('page',page);
+				key = false;
+				btnSearch.click();
+			}
 		})
-        //点击
+        //删除按钮
+        $('.mp20').on('click','.delete',function () {
+			$.ajax({
+				type:'post',
+				url:baseobj.delete,
+				data:{
+					id:$(this).attr('data-id')
+				},
+				success:function (msg) {
+					alert(msg.msg)
+                    window.location.reload();
+				}
+			});
+
+		});
 	});
 
 </script>
