@@ -70,9 +70,93 @@
                 </tbody>
             </table>
             <div class="row text-center">
+                <nav aria-label="..." style="margin: 0 auto">
+                    <ul class="pagination">
+                        <li class="disabled"><span aria-hidden="true">«</span></li>
+                        <li class="active"><a href="#">1 <span class="sr-only">(current)</span></a></li>
+                        <li><a href="#">2</a></li>
+                        <li><a href="#">3</a></li>
+                        <li><a href="#">4</a></li>
+                        <li><a href="#">5</a></li>
+                        <li><span aria-hidden="true">»</span></li>
+                    </ul>
+                </nav>
             </div>
         </div>
-    </div>
-</body>
 
+    </div>
+<script id="optionlist" type="text/html">
+    <option value="">所有分类</option>
+    {{each data v}}
+    <option>{{v.name}}</option>
+    {{/each}}
+</script>
+<script type="text/html" id="trlist">
+    {{each data.data v}}
+    <tr>
+        <td>王积千造统最头</td>
+        <td>杰克</td>
+        <td>奇趣事</td>
+        <td class="text-center">2017-06-08 07:08:46</td>
+        <td class="text-center">已发布</td>
+        <td class="text-center">
+            <a href="article_edit.html" class="btn btn-default btn-xs">编辑</a>
+            <a href="javascript:void(0);" class="btn btn-danger btn-xs delete">删除</a>
+        </td>
+    </tr>
+    {{/each}}
+</script>
+<script id="ymlist" type="text/html">
+    <li class="disabled"><span aria-hidden="true" style="cursor: pointer;" >«</span></li>
+    {{ each cat}}
+    {{if $index==0}}
+    <li class="active"><a href="#">{{$index+1}}<span class="sr-only">(current)</span></a></li>
+    {{else}}
+    <li><a href="#">{{$index+1}}</a></li>
+    {{/if}}
+    {{ /each }}
+    <li><span aria-hidden="true" style="cursor: pointer;">»</span></li>
+</script>
+</body>
+<script>
+    $(function () {
+    	//下拉类别渲染
+        $.ajax({
+            type:'get',
+            url:baseobj.list,
+            success:function (msg) {
+				// console.log(msg);
+				$('#selCategory').html(template('optionlist',msg));
+			}
+        });
+        //页码渲染
+		function ymfn(num){
+			$.ajax({
+				url:baseobj.info,
+				type:'get',
+				success:function (msg) {
+					// console.log(msg);
+					var cat = [];
+					totalArticle = msg.totalArticle;
+					cat.length = totalArticle/num;
+					$('.pagination').html(template('ymlist',{cat:cat}));
+				}
+			});
+        }
+        //文章渲染
+		$.ajax({
+			type:'get',
+			url:baseobj.query,
+            data:{
+				perpage:10
+            },
+			success:function (msg) {
+				// console.log(msg);
+				$('.mp20>tbody').html(template('trlist',msg));
+				ymfn(msg.data.data.length);
+			}
+		});
+	});
+
+</script>
 </html>
