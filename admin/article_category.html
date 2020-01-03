@@ -112,7 +112,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-default btn-clons" data-dismiss="modal">取消</button>
                     <button type="button" class="btn btn-primary" id="btn-ajax">新增</button>
                 </div>
             </div>
@@ -120,6 +120,7 @@
     </div>
 <script>
 	$(function () {
+		//模态框js
 		$('#exampleModal').on('show.bs.modal', function (event) {
 			var button = $(event.relatedTarget) // Button that triggered the modal
 			var recipient = button.data('whatever') // Extract info from data-* attributes
@@ -129,6 +130,7 @@
 			modal.find('.modal-title').text(recipient)
 			modal.find('.modal-footer .btn-primary').text(recipient.substr(0,2))
 		});
+		//分类渲染
         function trlist (){
 			$.ajax({
 				type:'get',
@@ -141,6 +143,7 @@
 			});
         }
 		trlist();
+        // 新增，修改点击Ajax
         $('#btn-ajax').click(function () {
         	var name = $('#recipient-name').val();
         	var slug = $('#message-text').val();
@@ -153,6 +156,8 @@
 					success:function (msg) {
 						// alert(msg.msg);
 						$('#exampleModal').modal('hide');
+						trlist();
+						$('.modal-body>form')[0].reset();
 					}
 				});
             }else {
@@ -164,11 +169,13 @@
 					success:function (msg) {
 						// alert(msg.msg);
 						$('#exampleModal').modal('hide');
+						$('.modal-body>form')[0].reset();
 					}
 				});
             }
 			trlist();
 		});
+        //点击删除事件
         $('.category_table').on('click','.btn-xs',function () {
 			$.ajax({
                 url:baseobj.deleteclass,
@@ -179,6 +186,7 @@
 				}
             });
 		});
+        //点击修改事件
         $('.category_table').on('click','.btn-new',function () {
 			var part = $(this).parent('td').siblings();
 			// console.log(part[0].innerText);
@@ -187,6 +195,10 @@
 			$('#exampleModal input').val(txt1);
 			$('#exampleModal textarea').val(txt2);
 			$('#btn-ajax').attr('btn-id',$(this).parent('td').attr('atricle-id'));
+		});
+        //模态框取消按钮
+        $('.btn-clons').click(function () {
+			$('.modal-body>form')[0].reset();
 		});
 	})
 </script>

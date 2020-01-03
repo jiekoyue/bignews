@@ -85,20 +85,23 @@
         </div>
 
     </div>
+<!--  下拉类别渲染  -->
 <script id="optionlist" type="text/html">
     <option value="">所有分类</option>
     {{each data v}}
-    <option>{{v.name}}</option>
+    <option optionid="{{v.id}}">{{v.name}}</option>
     {{/each}}
 </script>
+
+<!--    文章渲染-->
 <script type="text/html" id="trlist">
     {{each data.data v}}
     <tr>
-        <td>王积千造统最头</td>
-        <td>杰克</td>
-        <td>奇趣事</td>
-        <td class="text-center">2017-06-08 07:08:46</td>
-        <td class="text-center">已发布</td>
+        <td>{{v.title}}</td>
+        <td>{{v.author}}</td>
+        <td>{{v.category}}</td>
+        <td class="text-center">{{v.date}}</td>
+        <td class="text-center">{{v.state}}</td>
         <td class="text-center">
             <a href="article_edit.html" class="btn btn-default btn-xs">编辑</a>
             <a href="javascript:void(0);" class="btn btn-danger btn-xs delete">删除</a>
@@ -106,13 +109,15 @@
     </tr>
     {{/each}}
 </script>
+
+<!--   页码渲染 -->
 <script id="ymlist" type="text/html">
     <li class="disabled"><span aria-hidden="true" style="cursor: pointer;" >«</span></li>
     {{ each cat}}
-    {{if $index==0}}
-    <li class="active"><a href="#">{{$index+1}}<span class="sr-only">(current)</span></a></li>
+    {{if $index==num}}
+    <li class="active"><a href="#" class="alist">{{$index+1}}<span class="sr-only">(current)</span></a></li>
     {{else}}
-    <li><a href="#">{{$index+1}}</a></li>
+    <li><a href="#" class="alist">{{$index+1}}</a></li>
     {{/if}}
     {{ /each }}
     <li><span aria-hidden="true" style="cursor: pointer;">»</span></li>
@@ -129,33 +134,56 @@
 				$('#selCategory').html(template('optionlist',msg));
 			}
         });
-        //页码渲染
-		function ymfn(num){
+        //文章渲染
+        function wenzhan(type,state,page,fn){
 			$.ajax({
-				url:baseobj.info,
 				type:'get',
+				url:baseobj.query,
+				data:{
+					type:type,
+					state:state,
+					page:page,
+					perpage:10
+				},
 				success:function (msg) {
 					// console.log(msg);
-					var cat = [];
-					totalArticle = msg.totalArticle;
-					cat.length = totalArticle/num;
-					$('.pagination').html(template('ymlist',{cat:cat}));
+					fn(msg.data.totalPage);
+					$('.mp20>tbody').html(template('trlist',msg));
 				}
 			});
         }
-        //文章渲染
-		$.ajax({
-			type:'get',
-			url:baseobj.query,
-            data:{
-				perpage:10
-            },
-			success:function (msg) {
-				// console.log(msg);
-				$('.mp20>tbody').html(template('trlist',msg));
-				ymfn(msg.data.data.length);
-			}
+        //调用文章渲染方法并渲染页码
+        wenzhan("","",1,function (len) {
+			var cat = [];
+			cat.length = len;
+			//页码渲染
+			$('.pagination').html(template('ymlist',{cat:cat,num:0}));
 		});
+        //筛选按钮
+        function shiaxun(num){
+			var type = $("#selCategory>option:checked").attr('optionid');
+			var state = $("#selStatus").val();
+			console.log(type,state);
+			wenzhan(type,state,num+1,function (len) {
+				var cat = [];
+				cat.length = len;
+				//页码渲染
+				$('.pagination').html(template('ymlist',{cat:cat,num:num}));
+			})
+        }
+        $('#btnSearch').click(function (e) {
+			e.preventDefault();
+            // alert();
+			shiaxun(0);
+
+		});
+
+        //点击页码
+        $('.pagination').on('click','.alist',function () {
+            // alert()
+			shiaxun($(this).text()-1)
+		})
+        //点击
 	});
 
 </script>
