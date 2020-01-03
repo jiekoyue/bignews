@@ -15,6 +15,26 @@
     <!-- 引入模板引擎js文件 -->
     <script src="./libs/template-web.js"></script>
     <script src="libs/http.js"></script>
+    <style>
+        .btn-new{
+            background-color: #5bc0de;
+            border-color: #46b8da;
+            padding:2px 7px;
+            font-size: 12px;
+        }
+        .btn-new2{
+            background-color: #5cb85c;
+            border-color: #4cae4c;
+        }
+        .btn-new2:hover{
+            background-color: #5cb85c;
+            border-color: #4cae4c;
+        }
+        .btn-new:hover{
+            background-color: #5bc0de;
+            border-color: #46b8da;
+        }
+    </style>
 </head>
 
 <body>
@@ -36,7 +56,8 @@
                         <td>奇趣事</td>
                         <td>funny</td>
                         <td class="text-center">
-                            <a href="javascript:void(0);" data-toggle="modal" class=" btn btn-info btn-xs">编辑</a>
+                                <button type="button" class="btn btn-primary btn-new" data-toggle="modal" data-target="#exampleModal" data-whatever="编辑">编辑</button>
+
                             <a href="javascript:void(0);" class="btn btn-danger btn-xs">删除</a>
                         </td>
                     </tr>
@@ -44,13 +65,130 @@
                 <tfoot>
                     <tr>
                         <td colspan="3" class="text-center">
-                            <a href="javascript:void(0)" class="btn btn-success" id="xinzengfenlei" data-toggle="modal"
-                                data-target="#myModal">新增分类</a>
+                            <button type="button" class="btn btn-primary btn-new2" data-toggle="modal" data-target="#exampleModal" data-whatever="新增分类">新增分类</button>
                         </td>
                     </tr>
                 </tfoot>
             </table>
         </div>
     </div>
+<!--    模板-->
+    <script id="trlist" type="text/html">
+        {{each data v}}
+        <tr>
+            <td>{{v.name}}</td>
+            <td>{{v.slug}}</td>
+            <td class="text-center" atricle-id="{{v.id}}">
+                <button type="button" class="btn btn-primary btn-new" data-toggle="modal" data-target="#exampleModal" data-whatever="编辑">编辑</button>
 
+                <a href="javascript:void(0);" class="btn btn-danger btn-xs">删除</a>
+            </td>
+        </tr>
+        {{/each}}
+    </script>
+<!--    //&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;-->
+<!--    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo">新增分类</button>-->
+<!--    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="@fat">编辑</button>-->
+<!--    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="@getbootstrap">Open modal for @getbootstrap</button>-->
+<!--    ...more buttons...-->
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="exampleModalLabel">New message</h4>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="recipient-name" class="control-label">分类名称:</label>
+                            <input type="text" class="form-control" id="recipient-name">
+                        </div>
+                        <div class="form-group">
+                            <label for="message-text" class="control-label">分类别名:</label>
+                            <textarea class="form-control" id="message-text"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="btn-ajax">新增</button>
+                </div>
+            </div>
+        </div>
+    </div>
+<script>
+	$(function () {
+		$('#exampleModal').on('show.bs.modal', function (event) {
+			var button = $(event.relatedTarget) // Button that triggered the modal
+			var recipient = button.data('whatever') // Extract info from data-* attributes
+			// If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+			// Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+			var modal = $(this)
+			modal.find('.modal-title').text(recipient)
+			modal.find('.modal-footer .btn-primary').text(recipient.substr(0,2))
+		});
+        function trlist (){
+			$.ajax({
+				type:'get',
+				url:baseobj.list,
+				success:function (msg) {
+					// console.log(msg);
+					$('.category_table tbody').html(template('trlist',msg)
+					);
+				}
+			});
+        }
+		trlist();
+        $('#btn-ajax').click(function () {
+        	var name = $('#recipient-name').val();
+        	var slug = $('#message-text').val();
+        	var data = {name:name,slug:slug};
+			if ($(this).text() == '新增') {
+				$.ajax({
+					url:baseobj.add,
+					type:'post',
+					data:data,
+					success:function (msg) {
+						// alert(msg.msg);
+						$('#exampleModal').modal('hide');
+					}
+				});
+            }else {
+				data.id = $(this).attr('btn-id');
+				$.ajax({
+					url:baseobj.editclass,
+					type:'post',
+					data:data,
+					success:function (msg) {
+						// alert(msg.msg);
+						$('#exampleModal').modal('hide');
+					}
+				});
+            }
+			trlist();
+		});
+        $('.category_table').on('click','.btn-xs',function () {
+			$.ajax({
+                url:baseobj.deleteclass,
+                type:'post',
+                data:{id:$(this).parent('td').attr('atricle-id')},
+                success:function (msg) {
+					trlist();
+				}
+            });
+		});
+        $('.category_table').on('click','.btn-new',function () {
+			var part = $(this).parent('td').siblings();
+			// console.log(part[0].innerText);
+			var txt1 = part[0].innerText;
+			var txt2 = part[1].innerText;
+			$('#exampleModal input').val(txt1);
+			$('#exampleModal textarea').val(txt2);
+			$('#btn-ajax').attr('btn-id',$(this).parent('td').attr('atricle-id'));
+		});
+	})
+</script>
+</body>
 </html>
