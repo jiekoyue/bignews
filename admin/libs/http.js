@@ -4,7 +4,7 @@
 		baseurl:baseurl,
 		login:baseurl+'/admin/user/login',//用户登录
 		userinfo:baseurl+'/admin/user/info',//获取用户信息
-		detail:baseurl+'/admin /user/detail',//获取用户详情
+		detail:baseurl+'/admin/user/detail',//获取用户详情
 		useredit:baseurl+'/admin/user/edit',//编辑用户信息
 		list:baseurl+'/admin/category/list',//所有文章类别
 		add:baseurl+'/admin/category/add',//新增文章类别
