@@ -57,26 +57,7 @@
 <div class="main_con clearfix">
     <div class="left_con">
         <ul class="focus_list">
-            <li class="first">
-                <a href="#"><img alt="" src="images/pic01.jpg"></a>
-                <p>图片说明</p>
-            </li>
-            <li>
-                <a href="#"><img alt="" src="images/pic02.jpg"></a>
-                <p>图片说明图片说明图片说明图片说明图片说明图片说明图片说明图片说明图片说明</p>
-            </li>
-            <li>
-                <a href="#"><img alt="" src="images/pic03.jpg"></a>
-                <p>图片说明</p>
-            </li>
-            <li>
-                <a href="#"><img alt="" src="images/pic05.jpg"></a>
-                <p>图片说明</p>
-            </li>
-            <li>
-                <a href="#"><img alt="" src="images/pic06.jpg"></a>
-                <p>图片说明</p>
-            </li>
+
         </ul>
 
         <div class="common_title">
@@ -228,6 +209,23 @@
     <p>CopyRight © 2019 深圳大事件信息技术股份有限公司 All Rights Reserved</p>
     <p>电话：0755-****888 粤ICP备*******8号</p>
 </div>
+
+<!--焦点图-->
+<script type="text/html" id="jiaodian">
+    <li class="first">
+        <a href="#" data-id="{{data[0].id}}"><img alt="" src="{{data[0].cover}}"></a>
+        <p>{{data[0].title}}</p>
+    </li>
+    {{each data v i}}
+    {{if i>0}}
+    <li>
+        <a href="#" data-id="{{v.id}}"><img alt="" src="{{v.cover}}"></a>
+        <p>{{v.title}}</p>
+    </li>
+    {{/if}}
+    {{/each}}
+</script>
+<!--最新资讯-->
 <script id="zixuan" type="text/html">
     {{ each data v }}
     <div class="common_news_list">
@@ -254,21 +252,34 @@
 	/*请求地址：/index/latest
     请求方式：get
     请求参数：无*/
+	// 最新资讯
 	$(function () {
 		$.ajax({
 			type: 'get',
 			url: baseobj.latest,
 			success: function (msg) {
-				console.log(msg);
-				$('.common_news').html(template('zixuan',msg))
+				$('.common_news').html(template('zixuan', msg))
 			}
 		});
-		$('.common_news').on('click','.data-id',function f() {
+		$('.common_news').on('click', '.data-id', function () {
 			var id = $(this).attr('data-id');
-			sessionStorage.setItem('wzid',id);
+			sessionStorage.setItem('wzid', id);
 			window.location.href = './article.html'
 		});
-
+		//首页焦点图  hotpic
+		$.ajax({
+			type: 'get',
+			url: baseobj.hotpic,
+			success: function (msg) {
+				console.log(msg);
+				$('.left_con>ul').html(template('jiaodian',msg));
+			}
+		});
+		$('.main_con').on('click', '.focus_list>li>a', function () {
+			var id = $(this).attr('data-id');
+			sessionStorage.setItem('wzid', id);
+			window.location.href = './article.html'
+		});
 	})
 </script>
 </html>
