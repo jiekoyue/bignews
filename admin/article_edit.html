@@ -69,5 +69,16 @@
         </div>
     </div>
 </body>
-
+    <script>
+        $.ajax({
+            type:'get',
+            url:baseobj.idsearch,
+            data:{
+            	id:window.location.href.substr(window.location.href.indexOf("=")+1,window.location.href.length)
+            },
+            success:function (msg) {
+                console.log(msg);
+			}
+        });
+    </script>
 </html>

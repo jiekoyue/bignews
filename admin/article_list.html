@@ -181,6 +181,10 @@
 			});
 
 		});
+		//发布按钮
+		$('#release_btn').click(function () {
+			$('.level02>li:eq(1)',window.parent.document).addClass('active').siblings().removeClass('active');
+		});
 	});
 
 </script>
