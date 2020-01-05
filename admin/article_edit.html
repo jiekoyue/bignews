@@ -105,6 +105,7 @@
 				console.log(msg.data);
 				$('.title').val(msg.data.title);
 				$('.category').val(msg.data.categoryId);
+				$('.article_cover').attr('src',msg.data.cover);
 				editor.txt.html(msg.data.content);
 				test15.value = msg.data.date;
 			}

@@ -198,7 +198,7 @@
     </div>
     <div class="article_con">
 
-        <p>{{msg.data.content}}</p>
+
 
     </div>
     <div class="article_links">
@@ -311,6 +311,7 @@
 						success:function (xhr) {
 							// console.log(xhr);
 							$('.left_con').html(template('xxxx',{msg,xhr}));
+							$('.article_con').html(msg.data.content);
 						}
 					});
 
