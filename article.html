@@ -275,7 +275,7 @@
 				url: obj,
 				type: 'get',
 				success: function (msg) {
-					console.log(msg);
+					// console.log(msg);
 					lei.html(template(mblei, msg));
 				}
 			});
@@ -284,7 +284,7 @@
             type:'get',
             url:baseobj.latest_comment,
             success:function (msg) {
-            	console.log(msg);
+            	// console.log(msg);
             	for (var i = 0;i<msg.data.length;i++){
 					msg.data[i].time = timesFun(msg.data[i].date+" "+msg.data[i].time);
 					msg.data[i].date = msg.data[i].date.substr ( msg.data[i].date.indexOf('-')+1, msg.data[i].date.length )
@@ -360,10 +360,35 @@
 		function tiaozhuan(dom){
 			var id = dom.attr('data-id');
 			sessionStorage.setItem('wzid', id);
-			window.location.href = './article.html'
+			window.location.href = './article.html';
 		}
 		//焦点关注 attention
 		ajaxfns(baseobj.attention,$('.guanzhu_list'),'jdgz');
+		//发表评论
+        $('.left_con').on('click','.comment_sub',function (e) {
+			e.preventDefault();
+			 var author = $('.comment_name').val().trim();
+			var content = $('.comment_input').val().trim();
+			if (author.length != 0 && content != 0) {
+				$.ajax({
+					type: 'post',
+					url: baseobj.post_comment,
+					data: {
+						author: author,
+						content: content,
+						articleId: sessionStorage.getItem('wzid')
+					},
+					success: function (msg) {
+						if (msg.code == 201){
+							alert('发表成功');
+							window.location.reload();
+                        }
+					}
+				});
+			}
+		});
+
+
 	});
 </script>
 </html>
