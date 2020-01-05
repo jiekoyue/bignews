@@ -57,7 +57,6 @@
 <div class="main_con clearfix">
     <div class="left_con">
         <ul class="focus_list">
-
         </ul>
 
         <div class="common_title">
@@ -137,13 +136,7 @@
         <div class="common_wrap">
             <h3><i class="fa fa-bar-chart"></i> 一周热门排行</h3>
             <ul class="content_list hotrank_list">
-                <li><span class="first">1</span><a href="#">神奇的水滴摄影，泡泡中的世界泡泡中的世界</a></li>
-                <li><span class="second">2</span><a href="#">神奇的水滴摄影，泡泡中的世界</a></li>
-                <li><span class="third">3</span><a href="#">神奇的水滴摄影，泡泡中的世界</a></li>
-                <li><span>4</span><a href="#">神奇的水滴摄影，泡泡中的世界</a></li>
-                <li><span>5</span><a href="#">神奇的水滴摄影，泡泡中的世界</a></li>
-                <li><span>6</span><a href="#">神奇的水滴摄影，泡泡中的世界</a></li>
-                <li><span>7</span><a href="#">神奇的水滴摄影，泡泡中的世界</a></li>
+
             </ul>
         </div>
         <div class="common_wrap">
@@ -185,12 +178,6 @@
             <h3><i class="fa fa-bullseye"></i> 焦点关注</h3>
             <ul class="content_list guanzhu_list">
                 <li><a href="#">神奇的水滴摄影，泡泡中的世界泡泡中的世界</a></li>
-                <li><a href="#">神奇的水滴摄影，泡泡中的世界</a></li>
-                <li><a href="#">神奇的水滴摄影，泡泡中的世界</a></li>
-                <li><a href="#">神奇的水滴摄影，泡泡中的世界</a></li>
-                <li><a href="#">神奇的水滴摄影，泡泡中的世界</a></li>
-                <li><a href="#">神奇的水滴摄影，泡泡中的世界</a></li>
-                <li><a href="#">神奇的水滴摄影，泡泡中的世界</a></li>
             </ul>
         </div>
     </div>
@@ -209,6 +196,13 @@
     <p>CopyRight © 2019 深圳大事件信息技术股份有限公司 All Rights Reserved</p>
     <p>电话：0755-****888 粤ICP备*******8号</p>
 </div>
+<!--列表-->
+<script id="list" type="text/html">
+    <li class="up"></li>
+    {{each data v}}
+    <li><a href="./list.html?id={{v.id}}" >{{v.name}}</a></li>
+    {{/each}}
+</script>
 
 <!--焦点图-->
 <script type="text/html" id="jiaodian">
@@ -223,6 +217,26 @@
         <p>{{v.title}}</p>
     </li>
     {{/if}}
+    {{/each}}
+</script>
+<!--热门排行-->
+<script id="remen" type="text/html">
+    {{each data v i}}
+    {{if i == 0}}
+    <li><span class="first">1</span><a href="#" data-id="{{v.id}}">{{v.title}}</a></li>
+    {{else if i == 1}}
+    <li><span class="second">2</span><a href="#" data-id="{{v.id}}">{{v.title}}</a></li>
+    {{else if i == 2}}
+    <li><span class="third">3</span><a href="#" data-id="{{v.id}}">{{v.title}}</a></li>
+    {{else}}
+    <li><span>{{i+1}}</span><a href="#" data-id="{{v.id}}">{{v.title}}</a></li>
+    {{/if}}
+    {{/each}}
+</script>
+<!--焦点关注-->
+<script id="jdgz" type="text/html">
+    {{each data v}}
+    <li><a href="#">{{v.intro}}</a></li>
     {{/each}}
 </script>
 <!--最新资讯-->
@@ -254,32 +268,52 @@
     请求参数：无*/
 	// 最新资讯
 	$(function () {
-		$.ajax({
-			type: 'get',
-			url: baseobj.latest,
-			success: function (msg) {
-				$('.common_news').html(template('zixuan', msg))
+
+		$('.search_btn').click(function () {
+			sessionStorage.setItem('key',$('.search_txt').val());
+			window.location.href = './list.html';
+		});
+		$('.search_txt').keydown(function (e) {
+			if (e.keyCode == 13){
+				$('.search_btn').click()
 			}
 		});
+		//列表
+		ajaxfn(baseobj.categoryclass,$('.level_two'),'list');
+		//最新资讯
+		ajaxfn(baseobj.latest,$('.common_news'),'zixuan');
 		$('.common_news').on('click', '.data-id', function () {
-			var id = $(this).attr('data-id');
+			tiaozhuan($(this))
+		});
+
+		function tiaozhuan(dom){
+			var id = dom.attr('data-id');
 			sessionStorage.setItem('wzid', id);
 			window.location.href = './article.html'
-		});
+        }
 		//首页焦点图  hotpic
-		$.ajax({
-			type: 'get',
-			url: baseobj.hotpic,
-			success: function (msg) {
-				console.log(msg);
-				$('.left_con>ul').html(template('jiaodian',msg));
-			}
-		});
+		ajaxfn(baseobj.hotpic,$('.left_con>ul'),'jiaodian');
 		$('.main_con').on('click', '.focus_list>li>a', function () {
-			var id = $(this).attr('data-id');
-			sessionStorage.setItem('wzid', id);
-			window.location.href = './article.html'
+			tiaozhuan($(this))
 		});
+		//热门排行
+		ajaxfn(baseobj.rank,$('.hotrank_list'),'remen');
+
+		$('.right_con').on('click', '.hotrank_list a', function () {
+			tiaozhuan($(this))
+		});
+		//焦点关注 attention
+        ajaxfn(baseobj.attention,$('.guanzhu_list'),'jdgz');
+
+		function ajaxfn(obj,lei,mblei) {
+			$.ajax({
+				url:obj,
+				type:'get',
+				success:function (msg) {
+					lei.html(template(mblei,msg));
+				}
+			});
+		}
 	})
 </script>
 </html>

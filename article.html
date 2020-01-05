@@ -133,7 +133,7 @@
     <div class="right_con setfl">
         <div class="common_wrap">
             <h3><i class="fa fa-bar-chart"></i> 一周热门排行</h3>
-            <ul class="content_list">
+            <ul class="content_list" id="content_list">
                 <li><span class="first">1</span><a href="#">神奇的水滴摄影，泡泡中的世界泡泡中的世界</a></li>
                 <li><span class="second">2</span><a href="#">神奇的水滴摄影，泡泡中的世界</a></li>
                 <li><span class="third">3</span><a href="#">神奇的水滴摄影，泡泡中的世界</a></li>
@@ -177,6 +177,7 @@
     <p>CopyRight © 2019 深圳大事件信息技术股份有限公司 All Rights Reserved</p>
     <p>电话：0755-****888 粤ICP备*******8号</p>
 </div>
+<!--最新评论-->
 <script id="rmmb" type="text/html">
     {{each data v}}
     <li>
@@ -186,6 +187,7 @@
     </li>
     {{/each}}
 </script>
+<!--评论-->
 <script id="xxxx" type="text/html">
     <div class="breadcrumb">
         当前位置： <a href="#">首页</a> &gt; <a href="#">{{msg.data.category}}</a> &gt; 文章详情
@@ -241,6 +243,26 @@
 <!-- 引入模板引擎js文件 -->
 <script src="./js/template-web.js"></script>
 <script src="./js/jquery-1.12.4.min.js"></script>
+<!--热门排行-->
+<script id="remen" type="text/html">
+    {{each data v i}}
+    {{if i == 0}}
+    <li><span class="first">1</span><a href="#" data-id="{{v.id}}" style="width: 183px;">{{v.title}}</a></li>
+    {{else if i == 1}}
+    <li><span class="second">2</span><a href="#" data-id="{{v.id}}">{{v.title}}</a></li>
+    {{else if i == 2}}
+    <li><span class="third">3</span><a href="#" data-id="{{v.id}}">{{v.title}}</a></li>
+    {{else}}
+    <li><span>{{i+1}}</span><a href="#" data-id="{{v.id}}">{{v.title}}</a></li>
+    {{/if}}
+    {{/each}}
+</script>
+<!--焦点关注-->
+<script id="jdgz" type="text/html">
+    {{each data v}}
+    <li><a href="#">{{v.intro}}</a></li>
+    {{/each}}
+</script>
 
 </body>
 <script>
@@ -248,6 +270,16 @@
 	// 2. 后台审核通过返回token
 	// 3. 下次发送请求带上token请求头
 	$(function () {
+		function ajaxfns(obj, lei, mblei) {
+			$.ajax({
+				url: obj,
+				type: 'get',
+				success: function (msg) {
+					console.log(msg);
+					lei.html(template(mblei, msg));
+				}
+			});
+		}
 		$.ajax({
             type:'get',
             url:baseobj.latest_comment,
@@ -319,6 +351,19 @@
 
 			return  timesString
 		}
+		//热门排行
+		ajaxfns(baseobj.rank, $('#content_list'), 'remen');
+		//热门排行点击事件
+		$('.right_con').on('click', '#content_list a', function () {
+			tiaozhuan($(this))
+		});
+		function tiaozhuan(dom){
+			var id = dom.attr('data-id');
+			sessionStorage.setItem('wzid', id);
+			window.location.href = './article.html'
+		}
+		//焦点关注 attention
+		ajaxfns(baseobj.attention,$('.guanzhu_list'),'jdgz');
 	});
 </script>
 </html>
