@@ -63,8 +63,8 @@
                 </div>
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
-                        <button class="btn btn-success btn-edit" type="submit">修改</button>
-                        <button class="btn btn-default btn-draft" type="submit">存为草稿</button>
+                        <button class="btn btn-success btn-edit shifo" type="submit">修改</button>
+                        <button class="btn btn-default btn-draft shifo" type="submit">存为草稿</button>
                     </div>
                 </div>
         </form>
@@ -119,14 +119,16 @@
 			$(this).prev().attr('src', url);
 		});
 
-		$('form').on('click','.btn-success', function (e) {
+		$('form').on('click','.shifo', function (e) {
 			//2.1 阻止表单默认提交事件 ： e.preventDefault();
 			e.preventDefault();
 			//2.2 创建FormData对象 ： new FormData(表单form) // 为dom元素
 			var fd = new FormData($('#form')[0]); //把所有input的name和内容拼接
             fd.append('id',window.location.href.split('=')[1]);
             fd.append('content',editor.txt.html());
-            fd.append('state',"已发布");
+            if ($(this).text() == '修改'){
+				fd.append('state',"已发布");
+            }
 			//2.3 ajax发送post请求
             //格式：var data = $("#formID").serialize();
             //功能：将表单内容序列化成一个字符串 不需要processData: false,
