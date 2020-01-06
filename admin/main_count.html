@@ -69,7 +69,7 @@
 	var curvedata = [];
 	$.ajax({
 		type: 'get',
-		url: 'http://localhost:8080/api/v1/admin/data/article',
+		url: baseobj.article,
 		success: function (msg) {
 			if (msg.code == 200) {
 				// for (var key in msg.data) {
@@ -161,7 +161,7 @@
 	var pienum = [], piename = [];
 	$.ajax({
 		type: 'get',
-		url: 'http://localhost:8080/api/v1/admin/data/category',
+		url: baseobj.category,
 		success: function (msg) {
 			if (msg.code == 200) {
 				for (var i = 0; i < msg.date.length; i++) {
