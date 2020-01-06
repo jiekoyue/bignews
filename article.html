@@ -187,7 +187,7 @@
     </li>
     {{/each}}
 </script>
-<!--评论-->
+<!--文章详情-->
 <script id="xxxx" type="text/html">
     <div class="breadcrumb">
         当前位置： <a href="#">首页</a> &gt; <a href="#">{{msg.data.category}}</a> &gt; 文章详情
@@ -197,9 +197,7 @@
         ({{msg.data.read}})&nbsp;&nbsp;&nbsp;评论: ({{msg.data.comments}})
     </div>
     <div class="article_con">
-
-
-
+        {{@ msg.data.content}}
     </div>
     <div class="article_links">
         上一篇： <a href="javascript:void(0)" prevId="{{msg.data.prev.id}}" class="prevId">{{msg.data.prev.title}}</a><br>
@@ -280,6 +278,7 @@
 				}
 			});
 		}
+		//最新评论
 		$.ajax({
             type:'get',
             url:baseobj.latest_comment,
@@ -289,10 +288,11 @@
 					msg.data[i].time = timesFun(msg.data[i].date+" "+msg.data[i].time);
 					msg.data[i].date = msg.data[i].date.substr ( msg.data[i].date.indexOf('-')+1, msg.data[i].date.length )
                 }
-				timesFun(msg.data[0].date+" "+msg.data[0].time).log;
+				timesFun(msg.data[0].date+" "+msg.data[0].time);
 				$('ul.comment_list').html(template('rmmb',msg));
 			}
         });
+
 		function mb(id) {
 			$.ajax({
 				type: 'get',
@@ -311,17 +311,19 @@
 						success:function (xhr) {
 							// console.log(xhr);
 							$('.left_con').html(template('xxxx',{msg,xhr}));
-							$('.article_con').html(msg.data.content);
 						}
 					});
 
 				}
 			});
 		}
+
 		mb(sessionStorage.getItem('wzid'));
+
 		$('.left_con').on('click','.prevId',function () {
 			mb($(this).attr('prevId'));
 		});
+
 		function timesFun (timesData) {
 			//如果时间格式是正确的，那下面这一步转化时间格式就可以不用了
 			var dateBegin = new Date(timesData.replace(/-/g, "/"));//将-转化为/，使用new Date
@@ -358,13 +360,16 @@
 		$('.right_con').on('click', '#content_list a', function () {
 			tiaozhuan($(this))
 		});
+
 		function tiaozhuan(dom){
 			var id = dom.attr('data-id');
 			sessionStorage.setItem('wzid', id);
 			window.location.href = './article.html';
 		}
+
 		//焦点关注 attention
 		ajaxfns(baseobj.attention,$('.guanzhu_list'),'jdgz');
+
 		//发表评论
         $('.left_con').on('click','.comment_sub',function (e) {
 			e.preventDefault();
