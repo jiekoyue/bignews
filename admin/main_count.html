@@ -119,7 +119,8 @@
 			xAxis: {
 				type: 'category',
 				boundaryGap: false,
-				data: curvedate
+				data: curvedate,
+				name: '日'
 			},
 			yAxis: {
 				type: 'value',
@@ -193,7 +194,7 @@
 			color: ['#5885E8', '#15CFD5', '#02CE69', '#FF9666', '#22FF1B',],
 			legend: {
 				orient: 'horizontal',
-				top: '20',
+				top: '25',
 				data: piename
 			},
 			title: {
@@ -204,7 +205,7 @@
 				{
 					name: '分类名称',
 					type: 'pie',
-					radius: ['50%', '70%'],
+					radius: ['40%', '60%'],
 					avoidLabelOverlap: false,
 					data: arr
 				}
@@ -217,22 +218,86 @@
 
 </script>
 <!-- 柱状图 -->
+<script type="text/javascript">
+	var columnname = [], columnarr = [];
+	$.ajax({
+		type: 'get',
+		url: 'http://localhost:8080/api/v1/admin/data/category',
+		success: function (msg) {
+			for (var z = 0; z < msg.date.length; z++) {
+				columnname.push(msg.date[z].name);
+				columnarr.push({
+					name: msg.date[z].name,
+					type: 'bar',
+					data: [msg.date[z].articles]
+				});
+			}
+			console.log(columnname);
+			console.log(columnarr);
+			column();
+		}
+	});
+	// 基于准备好的dom，初始化echarts实例
+	var columnChart = echarts.init(document.getElementById('column_show'));
+
+	function column() {
+		// 指定图表的配置项和数据
+		var columnoption = {
+			tooltip: {
+				trigger: 'axis',
+				axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+					type: 'line'        // 默认为直线，可选为：'line' | 'shadow'
+				}
+			},
+			title: {
+				text: '分类访问量',
+				left: 'center',
+			},
+			color: ['#5885E8', '#15CFD5', '#02CE69', '#FF9666', '#22FF1B',],
+			legend: {
+				top: 30,
+				data: columnname
+			},
+			grid: {
+				left: '3%',
+				right: '4%',
+				bottom: '3%',
+				containLabel: true
+			},
+			xAxis: [
+				{
+					type: 'category',
+					data: ['最近']
+				}
+			],
+			yAxis: [
+				{
+					type: 'value'
+				}
+			],
+			series: columnarr
+		};
+		// 使用刚指定的配置项和数据显示图表。
+		columnChart.setOption(columnoption);
+	}
+
+</script>
 </body>
 <script>
-    /* "totalArticle": 221,
+	/* "totalArticle": 221,
     "dayArticle": 22,
     "totalComment": 8001,
     "dayComment": 36
     */
-    $.ajax({
-        type:'get',
-        url:baseobj.info,
-        success:function (msg) {
-            $('.spannel em').eq(0).text(msg.totalArticle);
-            $('.spannel em').eq(1).text(msg.dayArticle);
-            $('.spannel em').eq(2).text(msg.totalComment);
-            $('.spannel em').eq(3).text(msg.dayComment);
+	$.ajax({
+		type: 'get',
+		url: baseobj.info,
+		success: function (msg) {
+			$('.spannel em').eq(0).text(msg.totalArticle);
+			$('.spannel em').eq(1).text(msg.dayArticle);
+			$('.spannel em').eq(2).text(msg.totalComment);
+			$('.spannel em').eq(3).text(msg.dayComment);
 		}
-    });
+	});
 </script>
 </html>
