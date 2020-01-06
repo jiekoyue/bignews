@@ -60,7 +60,6 @@
     <div class="column_pannel" id="column_show"></div>
 </div>
 
-
 <!-- 折线图 -->
 <script type="text/javascript">
 	// 基于准备好的dom，初始化echarts实例
@@ -219,5 +218,21 @@
 </script>
 <!-- 柱状图 -->
 </body>
-
+<script>
+    /* "totalArticle": 221,
+    "dayArticle": 22,
+    "totalComment": 8001,
+    "dayComment": 36
+    */
+    $.ajax({
+        type:'get',
+        url:baseobj.info,
+        success:function (msg) {
+            $('.spannel em').eq(0).text(msg.totalArticle);
+            $('.spannel em').eq(1).text(msg.dayArticle);
+            $('.spannel em').eq(2).text(msg.totalComment);
+            $('.spannel em').eq(3).text(msg.dayComment);
+		}
+    });
+</script>
 </html>
